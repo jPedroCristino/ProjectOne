@@ -1,35 +1,27 @@
 import requests
 import json
 
-# Carrega configurações do JSON
-with open("config.json", "r") as f:
-    config = json.load(f)
-
-API_KEY = config["api_key"]
-
 def obter_dados(ativo="BTC/USD"):
-    """Obtém dados históricos do ativo informado via API."""
-    
-    # Separando símbolo e mercado do ativo (ex.: "BTC/USD")
-    parts = ativo.split("/")
-    if len(parts) != 2:
-        print("Formato inválido para ativo. Use 'BTC/USD'")
-        return None
-    symbol, market = parts
-
-    # URL da API para criptomoedas
-    url = f"https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol={symbol}&market={market}&apikey={API_KEY}"
-    
+    """Obtém dados históricos da API Alpha Vantage."""
     try:
+        with open("config.json", "r") as f:
+            config = json.load(f)
+            
+        symbol, market = ativo.split("/") if "/" in ativo else (None, None)
+        
+        if not symbol or not market:
+            raise ValueError("Formato inválido para ativo. Use 'MOEDA/MERCADO'")
+            
+        url = f"https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol={symbol}&market={market}&apikey={config['api_key']}"
+        
         resposta = requests.get(url)
         dados = resposta.json()
         
-        key = "Time Series (Digital Currency Daily)"
-        if key not in dados:
-            print("Chave de dados não encontrada. Resposta da API:", dados)
-            return None
-
-        return dados[key]
+        if "Time Series (Digital Currency Daily)" not in dados:
+            raise KeyError("Estrutura de dados inválida da API")
+            
+        return dados["Time Series (Digital Currency Daily)"]
+        
     except Exception as e:
-        print(f"Erro ao obter dados: {e}")
+        print(f"Erro na obtenção de dados: {e}")
         return None

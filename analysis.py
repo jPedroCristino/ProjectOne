@@ -1,22 +1,26 @@
 import pandas as pd
 
 def calcular_media_movel(dados):
-    """Converte os dados em um DataFrame e calcula a média móvel de 7 dias."""
-
+    """Processa dados e calcula a média móvel, exibindo informações detalhadas."""
     try:
         df = pd.DataFrame.from_dict(dados, orient="index")
-        df = df.iloc[::-1]  # Ordena da mais antiga para a mais recente
-
-        # Imprime as colunas disponíveis para depuração
-        print("Colunas do DataFrame:", df.columns.tolist())
-        print("Exemplo de dados:", df.head())
-
-        # Define a coluna correta do preço de fechamento
+        df.columns = ['1. open', '2. high', '3. low', '4. close', '5. volume']
+        df = df.iloc[::-1]  # Ordena cronologicamente
+        
+        # Formatação para exibição
+        pd.set_option('display.float_format', lambda x: f"{x:.8f}".rstrip('0').rstrip('.'))
+        
+        print("\n=== Estrutura do DataFrame ===")
+        print("Colunas:", df.columns.tolist())
+        print("\nExemplo de Dados (5 primeiras linhas):")
+        print(df.head())
+        
+        # Cálculos
         df["close"] = df["4. close"].astype(float)
-
-        # Calcula a média móvel
         df["media_movel"] = df["close"].rolling(window=7).mean()
+        
         return df
+    
     except Exception as e:
-        print(f"Erro na análise de dados: {e}")
+        print(f"\n Erro na análise: {e}")
         return None

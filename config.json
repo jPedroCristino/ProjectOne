@@ -1,7 +1,5 @@
 {
     "api_key": "VVF70V8972YEHDUP",
     "ativo": "BTC/USD",
-    "limite_alerta": 60000,
-    "alerta_email": true,
-    "email_destinatario": "joaotesteapi@outlook.com"
+    "limite_alerta": 60000
 }
